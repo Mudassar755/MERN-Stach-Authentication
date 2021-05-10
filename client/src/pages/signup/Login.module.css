@@ -1,0 +1,36 @@
+.wControlCol1 {
+    max-width: 467px;
+  }
+  .wControlCol1 p {
+    font-size: 14px;
+  }
+  .wControlCol1 h6 {
+    font-size: 16px;
+  }
+  .wControlCol1 .loginButton {
+    font-size: 20px;
+  }
+  .wControlCol1 label {
+    font-size: 14px;
+  }
+  .wControlCol2 {
+    max-width: 519px;
+  }
+  .closeIcon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+  }
+  .signInHeight {
+    min-height: 100vh;
+  }
+  .showHidePwd {
+    cursor: pointer;
+  }
+  @media (max-width: 991.5px) {
+    .signInHeight {
+      min-height: auto;
+    }
+  }
+  
