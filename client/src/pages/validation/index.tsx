@@ -7,7 +7,7 @@ import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
 import FormCheck from 'react-bootstrap/FormCheck';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import styles from './Login.module.css'
+import styles from './Validation.module.css'
 
 import TextField from '../../components/TextField'
 // import Page from "../../components/Page";
@@ -23,7 +23,7 @@ import { setCookie } from "../../services/cookies";
 import { GoogleLogin } from "react-google-login";
 import { User } from "../../types/User";
 //import Spinner from "../../components/Spinner/Spinner";
-import { register } from '../../redux/Actions/auth';
+import { validate } from '../../redux/Actions/auth';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../redux/Reducers'
 
@@ -32,27 +32,15 @@ const SignUp = () => {
     const dispatch = useDispatch()
     const isAuthenticated = useSelector((state:RootState) => state.auth.isAuthenticated)
     const user = useSelector((state:RootState) => state.auth.user)
-    const toatStyles = {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
+
+    const onSubmit = (values: any) => {
+        dispatch(validate(values.validationCode))
     };
 
-    const onSubmit = ( values:User) => {
-        dispatch(register(values));
-    };
-
-    console.log("stattetetee", user)
-if (user) {
-  return <Redirect to="/validate" />;
-}
-if (isAuthenticated) {
-  return <Redirect to="/" />;
-}
+    console.log(isAuthenticated)
+    if (isAuthenticated) {
+        return <Redirect to="/" />;
+    }
     // const Register = async (values: User) => {
     //     console.log("valuessss", values)
     //     const response = await signup(values);
@@ -70,23 +58,15 @@ if (isAuthenticated) {
             <Row>
                 <Col xs={{ span: 12, order: 2 }} lg={{ span: 6, order: 1 }} className="px-lg-5">
                     <div className={`${styles.wControlCol1} ${styles.signInHeight} d-flex flex-column justify-content-center text-center mx-auto`}>
-                        <h2 className="mb-3 mt-3 font-weight-bold">Sign up to Your Account!</h2>
+                        <h2 className="mb-3 mt-3 font-weight-bold">Validate Your Account!</h2>
 
                         <div className="mt-3">
                             <Formik
                                 initialValues={{
-                                    name:"",
-                                    email: "",
-                                    // password: "",
+                                    validationCode: "",
                                 }}
                                 validationSchema={Yup.object().shape({
-                                    name: Yup.string()
-                                        .required('Name is Required'),
-                                    email: Yup.string()
-                                        .email("Must be a valid email")
-                                        .max(255)
-                                        .required("Email is required"),
-                                    // password: Yup.string().max(255).required("Password is required"),
+                                    validationCode: Yup.string().max(6).min(6).required("Enter the Token"),
                                 })}
                                 onSubmit={onSubmit}
                             >
@@ -102,50 +82,23 @@ if (isAuthenticated) {
                                     <>
                                         <Form className="w-100 mt-3 mb-3" onSubmit={handleSubmit}>
                                             <TextField
-                                                error={Boolean(touched.email && errors.email)}
+                                                error={Boolean(touched.validationCode && errors.validationCode)}
                                                 fullWidth
-                                                helperText={touched.email && errors.email}
-                                                label="Full Name"
+                                                helperText={touched.validationCode && errors.validationCode}
+                                                label="Validation Code"
                                                 margin="normal"
-                                                name="name"
+                                                name="validationCode"
                                                 onBlur={handleBlur}
                                                 onChange={handleChange}
-                                                type="text"
-                                                value={values.name}
+                                                type="number"
+                                                value={values.validationCode}
                                                 variant="outlined"
                                                 className="pb-4 mb-1 shadow-none"
                                             />
-                                            <TextField
-                                                error={Boolean(touched.email && errors.email)}
-                                                fullWidth
-                                                helperText={touched.email && errors.email}
-                                                label="Email Address"
-                                                margin="normal"
-                                                name="email"
-                                                onBlur={handleBlur}
-                                                onChange={handleChange}
-                                                type="email"
-                                                value={values.email}
-                                                variant="outlined"
-                                                className="pb-4 mb-1 shadow-none"
-                                            />
-                                            {/* <TextField
-                                                error={Boolean(touched.password && errors.password)}
-                                                fullWidth
-                                                helperText={touched.password && errors.password}
-                                                label="Password"
-                                                margin="normal"
-                                                name="password"
-                                                onBlur={handleBlur}
-                                                onChange={handleChange}
-                                                type="password"
-                                                value={values.password}
-                                                variant="outlined"
-                                                className="pb-4 mb-1 shadow-none"
-                                            /> */}
+
                                             <Button className={`${styles.loginButton} w-100 shadow-none font-weight-bold`} variant="primary" type="submit" style={{ backgroundColor: "#1267EF" }}>Submit</Button>
                                         </Form>
-                                        <p>Already have an account? <Link to='/login'><a><span style={{ color: "#1267EF" }}>Login</span></a></Link></p>
+                                        {/* <p>Already have an account? <Link to='/login'><a><span style={{ color: "#1267EF" }}>Login</span></a></Link></p> */}
                                     </>
                                 )}
                             </Formik>

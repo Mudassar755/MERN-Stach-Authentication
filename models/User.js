@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
+        // required: true
     },
     valid: {
         type: Boolean,
@@ -26,14 +26,14 @@ const UserSchema = new mongoose.Schema({
         // auto created
         type: String,
     },
-    avatar: {
-        type: String
-    },
+    // avatar: {
+    //     type: String
+    // },
     date: {
         type: Date,
         default: Date.now
     },
-    resetPasswordToken: {
+    confirmationCode: {
         type: String,
         default: null,
         required: false,
@@ -42,11 +42,10 @@ const UserSchema = new mongoose.Schema({
 
 UserSchema.pre("save", async function (next) {
     const user = this;
-    // if (user.isModified("password")) {
-    //   user.password = await bcrypt.hash(user.password, 8);
-    // }
+   
     if (!user.valid) {
-        user.validationToken = crypto.randomBytes(64).toString("hex");
+        user.validationToken = Math.floor(100000 + Math.random() * 900000).toString()
+        // user.validationToken = crypto.randomBytes(64).toString("hex");
     }
     next();
 });
@@ -55,9 +54,9 @@ UserSchema.methods.generateAuthToken = async function () {
     const { _id } = this;
     return jwt.sign({ user: { id: _id } }, config.get("JwtSecret"),);
 };
-UserSchema.methods.createResetPasswordToken = async function () {
-    this.resetPasswordToken = crypto.randomBytes(64).toString("hex");
+UserSchema.methods.createConfirmationCode = async function () {
+    this.confirmationCode = Math.floor(100000 + Math.random() * 900000).toString()
     this.save();
-    return this.resetPasswordToken;
+    return this.confirmationCode;
 };
 module.exports = User = mongoose.model('user', UserSchema);

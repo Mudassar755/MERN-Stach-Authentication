@@ -18,6 +18,7 @@
     "config": "^3.3.2",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "email-templates": "^8.0.4",
     "express": "^4.17.1",
     "express-useragent": "^1.0.15",
     "express-validator": "^6.6.1",
@@ -26,6 +27,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.10.9",
     "multer": "^1.4.2",
+    "nodemailer": "^6.6.0",
     "request": "^2.88.2",
     "yarn": "^1.22.4"
   },

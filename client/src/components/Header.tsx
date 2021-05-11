@@ -1,12 +1,21 @@
 import React, { useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { Nav, NavDropdown, Navbar } from "react-bootstrap";
+import {useDispatch, useSelector} from 'react-redux';
+import {RootState} from '../redux/Reducers'
+import {logout} from '../redux/Actions/auth'
 
-import { GlobalContext } from '../context/GlobalState'
 
-function Header() {
+const Header = () => {
+
+  const dispatch = useDispatch()
+
+  const isAuthenticated = useSelector((state:RootState) => state.auth.isAuthenticated)
+  const user = useSelector((state:RootState) => state.auth.user)
+  const isLoading = useSelector((state:RootState) => state.auth.isLoading)
+
   const {location} = useHistory()
-  const { isAuthenticated, isLoading, user, logout } = useContext(GlobalContext)
+
   console.log("hissss", location.pathname)
   console.log("user", user)
   return (
@@ -23,7 +32,7 @@ function Header() {
 
           <Nav className="navbar-nav ml-auto">
             {isAuthenticated ? <NavDropdown title={user && user.name} id="collasible-nav-dropdown">
-              <NavDropdown.Item onClick={() => logout && logout()}>Logout</NavDropdown.Item>
+              <NavDropdown.Item onClick={() => dispatch(logout())}>Logout</NavDropdown.Item>
             </NavDropdown> :
               <>
                 <Nav.Item>

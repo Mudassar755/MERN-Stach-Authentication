@@ -2,7 +2,7 @@ import React, { createContext, useReducer } from 'react';
 import UserReducer from './UserReducer';
 import axios from 'axios'
 import { Auth } from '../types/Auth';
-import { getUser, login, signup } from '../services/auth';
+import { getUser, login, signup, validateToken } from '../services/auth';
 import setAuthToken from '../utils/setAuthToken';
 import { User } from '../types/User';
 
@@ -21,6 +21,7 @@ type contextProps = {
   loadUser: () => void,
   handleLogin: (values:Auth) => void,
   handleSignup: (values:User) => void
+  validate: (token:string) => void
   logout: () => void,
 };
 // Create context
@@ -37,7 +38,7 @@ export const GlobalProvider = ({ children }: any) => {
       setAuthToken(localStorage.token);
     }
     const res = await getUser();
-    console.log("resssss", res)
+    // console.log("resssss", res)
 
     dispatch({
       type: "USER_LOADED",
@@ -45,7 +46,7 @@ export const GlobalProvider = ({ children }: any) => {
     });
 
   };
-  async function handleLogin(values:Auth) {
+  async function handleLogin(values:any) {
 
     const res = await login(values);
     dispatch({
@@ -56,7 +57,7 @@ export const GlobalProvider = ({ children }: any) => {
     dispatch(loadUser());
   };
 
-  async function handleSignup(values: User){
+  async function handleSignup(values: any){
   
     const res = await signup(values);
     // console.log("response", res)
@@ -65,9 +66,25 @@ export const GlobalProvider = ({ children }: any) => {
       payload: res.data
     });
     // setLoading(false)
-    dispatch(loadUser());
+    // dispatch(loadUser());
    
   };
+
+  async function validate(token:string) {
+    if (localStorage.token) {
+      setAuthToken(localStorage.token);
+    }
+    const user = await getUser();
+    console.log("userrrrr", token, "iddd",  user.data._id)
+      const res = await validateToken(token, user.data._id);
+      console.log("ressss", res)
+      dispatch({
+        type: "VALIDATION_SUCCESS",
+        payload: res.data
+      });
+  
+  };
+
   function logout() {
     dispatch({ type: "LOGOUT" });
   
@@ -80,6 +97,7 @@ export const GlobalProvider = ({ children }: any) => {
     loadUser,
     handleLogin,
     handleSignup,
+    validate,
     logout
   }}>
     {children}

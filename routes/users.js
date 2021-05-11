@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const config = require("config");
 const auth = require("../middleware/auth");
+const mailService = require("../services/mailService");
 
 
 const router = express.Router();
@@ -20,9 +21,9 @@ router.post(
       .not()
       .isEmpty(),
     check("email", "please include a valid email").isEmail(),
-    check("password", "password must be 6 characters or more").isLength({
-      min: 6
-    })
+    // check("password", "password must be 6 characters or more").isLength({
+    //   min: 6
+    // })
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -31,7 +32,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, email, password } = req.body;
+    const { name, email } = req.body;
 
     try {
       let user = await User.findOne({ email });
@@ -42,22 +43,14 @@ router.post(
           .json({ errors: [{ msg: "User already exist" }] });
       }
 
-      const avatar = gravatar.url(email, {
-        s: "200", //size
-        r: "pg", //rating
-        d: "mm" //default
-      });
-
       user = new User({
         name,
         email,
-        avatar,
-        password
       });
 
-      const salt = await bcrypt.genSalt(10);
+      // const salt = await bcrypt.genSalt(10);
 
-      user.password = await bcrypt.hash(password, salt);
+      // user.password = await bcrypt.hash(password, salt);
 
       await user.save();
 
@@ -76,6 +69,21 @@ router.post(
           res.json({ token, user });
         }
       );
+      if (user) {
+        await mailService.sendEmail(
+          {
+            to: email,
+            from: config.get('USER'),
+            subject: "Confirmation Code",
+          },
+          {
+            validationToken: user.validationToken,
+            id: user._id,
+            name: user.name
+          },
+          "confirmationCode"
+        );
+      }
     } catch (err) {
       console.error(err.message);
       res.status(500).send("Server Error");

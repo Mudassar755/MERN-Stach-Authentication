@@ -17,7 +17,7 @@ const router = express.Router();
 
 router.post("/", auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    const user = await User.findById(req.user.id);
     res.json(user);
   } catch (err) {
     console.error(err.message);
@@ -32,7 +32,7 @@ router.post("/", auth, async (req, res) => {
 router.post("/login",
   [
     check("email", "please include a valid email ").isEmail(),
-    check("password", "password is required").exists()
+    // check("password", "password is required").exists()
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -41,7 +41,7 @@ router.post("/login",
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, password } = req.body;
+    const { email } = req.body;
 
     try {
       let user = await User.findOne({ email });
@@ -52,13 +52,13 @@ router.post("/login",
           .json({ errors: [{ msg: "User does not exist" }] });
       }
 
-      const isMatch = await bcrypt.compare(password, user.password);
+      // const isMatch = await bcrypt.compare(password, user.password);
 
-      if (!isMatch) {
-        return res
-          .status(400)
-          .json({ errors: [{ msg: "Email or Password is incorrect" }] });
-      }
+      // if (!isMatch) {
+      //   return res
+      //     .status(400)
+      //     .json({ errors: [{ msg: "Email or Password is incorrect" }] });
+      // }
 
       const payload = {
         user: {
@@ -82,5 +82,49 @@ router.post("/login",
     }
   }
 );
+
+router.post("/validate", async (req, res) => {
+  const { token: validationToken, id } = req.body;
+  // console.log("req.Bodyyy", req.body)
+  try {
+    const user = await User.findOneAndUpdate(
+      {
+        _id: id,
+        validationToken,
+      },
+      {
+        valid: true,
+      }
+      );
+      // console.log("req.Bodyyy", user)
+    if (!user) {
+      // return res.json({msg: "User Token is incorrect or expired!" })
+      return res.status(400)
+      .json({ errors: [{ msg: "Token is incorrect or expired!" }] });
+    }
+    const token = await user.generateAuthToken();
+    // await mailService.sendEmail(
+    //   {
+    //     to: user.email,
+    //     from: config.get('USER'),
+    //     subject: "Successfully Registered",
+    //   },
+    //   {
+    //     id: user._id,
+    //     name: user.name
+    //   },
+    //   "welcome"
+    // );
+    res.send({
+      user,
+      token,
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+
+ 
+})
 
 module.exports = router;

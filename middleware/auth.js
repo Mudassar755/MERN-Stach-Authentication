@@ -8,7 +8,7 @@ module.exports = async function (req, res, next) {
 
     //Check if tken
     if (!token) {
-        res.status(200).json({ msg: 'No token, Autherization denied' })
+        res.status(400).json({ msg: 'No token, Autherization denied' })
         return
     }
 
@@ -19,6 +19,6 @@ module.exports = async function (req, res, next) {
         req.currentUser = await User.findById(decoded.user.id)
         next();
     } catch (err) {
-        res.status(200).json({ msg: 'Token is not valid' })
+        res.status(400).json({ msg: 'Token is not valid' })
     }
 }

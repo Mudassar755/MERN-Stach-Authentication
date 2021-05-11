@@ -1,13 +1,7 @@
-import React, { useContext, useEffect } from 'react'
-import Slider from '../../components/Slider'
-import { GlobalContext } from '../../context/GlobalState';
+import React from 'react'
 
 const Home = () => {
-    const { loadUser, isAuthenticated } = useContext(GlobalContext);
-    useEffect(() => {
-        loadUser && loadUser()
-    }, [])
-    console.log("isAuthenticated", isAuthenticated)
+ 
     return (
         <div className="carousel-image-1">
             <div className="content text-center text-white">

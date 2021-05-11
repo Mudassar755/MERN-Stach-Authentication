@@ -3,10 +3,9 @@ export default (state: any, action: any) => {
     switch (type) {
         case "USER_LOADED":
             let token = localStorage.getItem("token");
-            console.log("hellooo")
             return {
                 ...state,
-                isAuthenticated: token ? true : false,
+                isAuthenticated: payload.valid,
                 isLoading: false,
                 user: payload,
                 token: token
@@ -18,7 +17,7 @@ export default (state: any, action: any) => {
             return {
                 ...state,
                 ...payload,
-                isAuthenticated: true,
+                isAuthenticated: payload.user.valid,
                 isLoading: false
             };
         case "REGISTER_FAIL":

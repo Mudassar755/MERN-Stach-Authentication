@@ -5,4 +5,5 @@ export const DOMAIN = `http://localhost:5002/api/`;
 export const SIGNUP = `${DOMAIN}users/`;
 export const LOGIN = `${DOMAIN}auth/login`;
 export const LOAD_USER = `${DOMAIN}auth`;
+export const VALIDATE_TOKEN = `${DOMAIN}auth/validate`;
 

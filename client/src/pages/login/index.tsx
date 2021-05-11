@@ -23,12 +23,17 @@ import { setCookie } from "../../services/cookies";
 import { GoogleLogin } from "react-google-login";
 import { Auth } from "../../types/Auth";
 //import Spinner from "../../components/Spinner/Spinner";
+import {useDispatch, useSelector} from 'react-redux';
+import {RootState} from '../../redux/Reducers'
 
-import { GlobalContext } from '../../context/GlobalState';
+import { handleLogin } from '../../redux/Actions/auth';
 
 
 const LoginView = () => {
   const [openSpinner, setOpenSpinner] = useState(false);
+  const dispatch = useDispatch()
+  const isAuthenticated = useSelector((state:RootState) => state.auth.isAuthenticated)
+  const user = useSelector((state:RootState) => state.auth.user)
   const toatStyles = {
     position: "bottom-right",
     autoClose: 5000,
@@ -38,18 +43,20 @@ const LoginView = () => {
     draggable: true,
     progress: undefined,
   };
-  const { handleLogin, isAuthenticated } = useContext(GlobalContext);
 //   const resetForm = () => {
 //     setFormData({
 //         email: "",
 //         password: ""
 //     });
 // };
+console.log("heool", user)
 
-
-  const onSubmit = ( values:Auth) => {
-    handleLogin && handleLogin(values);
+  const onSubmit = ( values:any) => {
+  dispatch(handleLogin(values));
 };
+if (user) {
+  return <Redirect to="/validate" />;
+}
 if (isAuthenticated) {
   return <Redirect to="/" />;
 }
@@ -65,14 +72,14 @@ if (isAuthenticated) {
               <Formik
                 initialValues={{
                   email: "",
-                  password: "",
+                  // password: "",
                 }}
                 validationSchema={Yup.object().shape({
                   email: Yup.string()
                     .email("Must be a valid email")
                     .max(255)
                     .required("Email is required"),
-                  password: Yup.string().max(255).required("Password is required"),
+                  // password: Yup.string().max(255).required("Password is required"),
                 })}
                 onSubmit={onSubmit}
               >
@@ -102,7 +109,7 @@ if (isAuthenticated) {
                         variant="outlined"
                         className="pb-4 mb-1 shadow-none"
                       />
-                      <TextField
+                      {/* <TextField
                         error={Boolean(touched.password && errors.password)}
                         fullWidth
                         helperText={touched.password && errors.password}
@@ -115,7 +122,7 @@ if (isAuthenticated) {
                         value={values.password}
                         variant="outlined"
                         className="pb-4 mb-1 shadow-none"
-                      />
+                      /> */}
                       <Button className={`${styles.loginButton} w-100 shadow-none font-weight-bold`} variant="primary" type="submit" style={{ backgroundColor: "#1267EF" }}>Submit</Button>
                     </Form>
                     <p>Don’t have an account? <Link to='/signup'><a><span style={{ color: "#1267EF" }}>Sign up</span></a></Link></p>
