@@ -1,9 +1,8 @@
-import { AlertAction, IAlert } from "../../types/Alert";
 import { SET_ALERT, REMOVE_ALERT } from "../Actions/types";
 
-const initialState:IAlert[] = [];
+const initialState:any = [];
 
-const alertReducer = (state = initialState, action:AlertAction) => {
+const alertReducer = (state = initialState, action:any) => {
   switch (action.type) {
     case SET_ALERT:
       return [...state, action.payload];
